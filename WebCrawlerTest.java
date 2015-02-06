@@ -1,12 +1,14 @@
+import java.io.IOException;
 import java.util.LinkedList;
 
 public class WebCrawlerTest
 {
 	private static LinkedList<String> secretFlags;
-	public static void main(String[] args)
+
+	public static void main(String[] args) throws IOException
 	{
 		// initial web page
-		//String s = args[0];
+		// String s = args[0];
 		String startWebsite = "http://cs5700.ccs.neu.edu/fakebook/";
 		String userName = "charleszhoulll";
 		String password = "qzmp1991327";
@@ -16,7 +18,7 @@ public class WebCrawlerTest
 		crawler.setPassword(password);
 		crawler.setRule(rule);
 		secretFlags = crawler.Run();
-		for(String flags:secretFlags)
+		for (String flags : secretFlags)
 		{
 			System.out.println(flags);
 		}
