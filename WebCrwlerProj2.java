@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.util.LinkedList;
 
-public class WebCrawlerTest
+public class WebCrwlerProj2
 {
 	private static LinkedList<String> secretFlags;
 
@@ -9,15 +9,16 @@ public class WebCrawlerTest
 	{
 		// initial web page
 		// String s = args[0];
-		String startWebsite = "http://cs5700.ccs.neu.edu/fakebook/";
-		String userName = "charleszhoulll";
-		String password = "qzmp1991327";
-		String rule = "cs5700.ccs.neu.edu/fakebook"; // Need revise
-		Crawler crawler = new Crawler(startWebsite);
+		String startWebsite = "http://cs5700f14.ccs.neu.edu";
+		//String startWebsite = "https://accounts.google.com/ServiceLoginAuth";
+		String userName = "001712808";
+		String password = "ILFWMEKJ";
+		String rule = "cs5700f14.ccs.neu.edu/fakebook"; // Need revise
+		Crawler crawler = new Crawler();
 		crawler.setUserName(userName);
 		crawler.setPassword(password);
 		crawler.setRule(rule);
-		secretFlags = crawler.Run();
+		secretFlags = crawler.Run(startWebsite);
 		for (String flags : secretFlags)
 		{
 			System.out.println(flags);
