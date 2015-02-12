@@ -7,21 +7,21 @@ public class WebCrwlerProj2
 
 	public static void main(String[] args) throws IOException
 	{
-		// initial web page
-		// String s = args[0];
-		String startWebsite = "http://cs5700f14.ccs.neu.edu";
-		//String startWebsite = "https://accounts.google.com/ServiceLoginAuth";
+		String startWebsite = "http://cs5700sp15.ccs.neu.edu/fakebook"; //cannot change this! Need revise
 		String userName = "001712808";
 		String password = "ILFWMEKJ";
-		String rule = "cs5700f14.ccs.neu.edu/fakebook"; // Need revise
+		String filter = "cs5700sp15.ccs.neu.edu"; 
 		Crawler crawler = new Crawler();
 		crawler.setUserName(userName);
 		crawler.setPassword(password);
-		crawler.setRule(rule);
+		crawler.setFilter(filter);
 		secretFlags = crawler.Run(startWebsite);
-		for (String flags : secretFlags)
+		if (secretFlags != null)
 		{
-			System.out.println(flags);
+			for (String flags : secretFlags)
+			{
+				System.out.println(flags);
+			}
 		}
 	}
 }

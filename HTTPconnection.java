@@ -10,72 +10,106 @@ import java.net.Socket;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 
-
 public class HTTPconnection
 {
-	//private int DEFAULT_PORT = 80;
-	//private String host = null;
+	private String PROTOCOL = "HTTP/1.1";
+	private String CONNECTION = "close";
+	private String CACHE_CONTROL = "max-age=0";
+	private String ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+	private String CONTENT_TYPE = "application/x-www-form-urlencoded";
+	private String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.99 Safari/537.36";
+	private String ACCEPT_LUNGUAGE = "en-us";
+
 	private Url currentURL;
-	private String cmd;
-	private LinkedList<String> cmdList;
-	//private String GET = "GET / http/1.0\n";
-	//private String POST = "POST / http/1.0\n";
-	//private String HOST = null;
-	private String SPACE = " ";
-	private String BLANK_LINE = "\n";
+	private String request;
+	private LinkedList<String> requestHearder;
+	private LinkedList<String> postMessage;
+	private String NEW_LINE = "\n";
 	private Socket client = null;
 	private InetSocketAddress sockAddr = null;
-	
-	private String sentContent;
-	
-	public HTTPconnection(Url currentWebsite)
+
+	public HTTPconnection(Url URL)
 	{
-		this.currentURL = currentWebsite;
-		cmdList = new LinkedList<String>();
+		this.currentURL = URL;
+		requestHearder = new LinkedList<String>();
+		postMessage = new LinkedList<String>();
 	}
 
-	public void setCmd(String command)
+	public void setRequest(String request)
 	{
-		this.cmd = command;
-		String httpCommand = cmd + SPACE + currentURL.getPath() + SPACE + currentURL.getProtocol() + BLANK_LINE;
-		cmdList.add(httpCommand);
+		this.request = request;
+		String httpCommand = this.request + " " + currentURL.getPath() + " " + PROTOCOL + NEW_LINE;
+		requestHearder.add(httpCommand);
 	}
-	
+
+	public void setHeader(String headerName, String headerValue)
+	{
+		String header = headerName + ": " + headerValue + NEW_LINE;
+		requestHearder.add(header);
+	}
+
+	public void setDefaultHeader()
+	{
+		requestHearder.add("Connection: " + CONNECTION + NEW_LINE);
+		requestHearder.add("Cache-Control: " + CACHE_CONTROL + NEW_LINE);
+		requestHearder.add("ACCEPT: " + ACCEPT + NEW_LINE);
+		requestHearder.add("CONTENT_TYPE: " + CONTENT_TYPE + NEW_LINE);
+		requestHearder.add("USER_AGENT: " + USER_AGENT + NEW_LINE);
+		requestHearder.add("ACCEPT_LUNGUAGE: " + ACCEPT_LUNGUAGE + NEW_LINE);
+	}
+
 	public void setPostContent(String sentContent)
 	{
-		//cmdList.add(sentContent);
-		this.sentContent = sentContent;
+		postMessage.add(sentContent);
 	}
-	
+
+	public void setCookies(LinkedList<Cookie> cookies)
+	{
+		if (cookies != null)
+		{
+			String sentCookie = cookies.get(0).getName() + "=" + cookies.get(0).getValue();
+			for (int i = 1; i < cookies.size(); i++)
+			{
+				sentCookie = sentCookie + "; " + cookies.get(i).getName() + "="
+						+ cookies.get(i).getValue();
+			}
+			sentCookie = "Cookie: " + sentCookie + NEW_LINE;
+			requestHearder.add(sentCookie);
+			// System.out.println(sentCookie);
+		}
+	}
+
 	public Page processURL()
 	{
-		String content = null;
+		String content = "";
 		try
 		{
 			client = new Socket();
 			sockAddr = new InetSocketAddress(currentURL.getHost(), currentURL.getPort());
-			//String hostName = InetAddress.getLocalHost().getHostName();
+			// String hostName = InetAddress.getLocalHost().getHostName();
 			client.connect(sockAddr, 1000);
 			Writer writer = new OutputStreamWriter(client.getOutputStream());
-			while (!cmdList.isEmpty())
+			while (!requestHearder.isEmpty())
 			{
-				String httpCommand = cmdList.remove();
-				System.out.println(httpCommand);
-				writer.write(stringToAscii(httpCommand));
-				writer.write(BLANK_LINE);
+				String request = requestHearder.remove();
+				//System.out.println(request);
+				writer.write(request);
 			}
-			if (sentContent != null)
+			writer.write(NEW_LINE);
+			while (!postMessage.isEmpty())
 			{
-				writer.write(sentContent);
+				String message = postMessage.remove();
+				// System.out.println(message);
+				writer.write(message);
 			}
 			writer.flush();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					client.getInputStream()));
-			String message;
+			String message = "";
 			while ((message = reader.readLine()) != null)
 			{
-				System.out.println(message);
-				content += message + BLANK_LINE;
+				//System.out.println(message);
+				content += message + NEW_LINE;
 			}
 			writer.close();
 			client.close();
@@ -85,93 +119,7 @@ public class HTTPconnection
 			System.out.println("Cannot get connect to address: " + sockAddr.getHostName());
 			e.printStackTrace();
 		}
-		return new Page(content);
+		Page currentPage = new Page(content);
+		return currentPage;
 	}
-	
-	/*public Page getPage()
-	{
-		String content = null;
-		try
-		{
-			client = new Socket();
-			sockAddr = new InetSocketAddress(host, DEFAULT_PORT);
-			//String hostName = InetAddress.getLocalHost().getHostName();
-			client.connect(sockAddr, 1000);
-			Writer writer = new OutputStreamWriter(client.getOutputStream());
-			GET = GET + HOST + BLANK_LINE;
-			writer.write(stringToAscii(GET));
-			writer.flush();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					client.getInputStream()));
-			String message;
-			while ((message = reader.readLine()) != null)
-			{
-				content += message + BLANK_LINE;
-			}
-			writer.close();
-			client.close();
-		}
-		catch (Exception e)
-		{
-			System.out.println("Cannot get connect to address: " + sockAddr.getHostName());
-			e.printStackTrace();
-		}
-		return new Page(content);
-	}*/
-
-	private String stringToAscii(String str)
-	{
-		byte[] bytes = null;
-		try
-		{
-			bytes = str.getBytes("US-ASCII");
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			System.out.println("HELLO message not follows ASCII standard");
-			e.printStackTrace();
-		}
-		if ((bytes == null) || (bytes.length == 0))
-		{
-			return "";
-		}
-		char[] ascii = new char[bytes.length];
-		for (int i = 0; i < bytes.length; i++)
-		{
-			ascii[i] = (char) bytes[i];
-		}
-		return new String(ascii);
-	}
-
-
-/*	public Page send(String sentContent)
-	{
-		String content = null;
-		try
-		{
-			client = new Socket();
-			sockAddr = new InetSocketAddress(host, DEFAULT_PORT);
-			client.connect(sockAddr, 1000);
-			Writer writer;
-			writer = new OutputStreamWriter(client.getOutputStream());
-			POST = POST + BLANK_LINE;
-			writer.write(stringToAscii(POST));
-			writer.write(stringToAscii(sentContent));
-			writer.flush();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					client.getInputStream()));
-			String message;
-			while ((message = reader.readLine()) != null)
-			{
-				content += message;
-			}
-		}
-		catch (Exception e)
-		{
-			System.out.println("Fail to send message: " + sentContent + " to " + this.host);
-			e.printStackTrace();
-		}
-		return new Page(content);
-	}*/
-
 }
