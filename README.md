@@ -1,9 +1,9 @@
-# The first socket program
-[Project website](http://david.choffnes.com/classes/cs4700sp15/project1.php)
+# The first webcrawler
+[Project website](http://david.choffnes.com/classes/cs4700sp15/project2.php)
 
 Introduction
 ------------
-SocketClient is a simple client program. It achieve basic function of sending and receiving data with remote server. It first send a HELLO message to remote server. If HELLO message is correctly recognized, server will return several hundreds basic mathematical problems.  Client will be responsible for solving these problems and sent back results. If all results are correct, server will sent a BYE message and end this conversation.
+Webcrawler is a simple web crawler. It achieve basic function of automatical login and content fetching. Webcrawler will first try to login into http://cs5700sp15.ccs.neu.edu/fakebook/ with user name and password provided. The program will be terminated if login fails. After login the crawler will start fetching every link it can find inside the website. A filter is use to stop crawler from fetching outside link. The mission of crawler is to collect 5 secret flags hiding in the network. The crawer will stop as soon as all the secret flags hanve all been found.
 
 Install and Usage
 -----------------
@@ -11,13 +11,9 @@ Install and Usage
 
 2. Run `./client`  to run the program,the argument list are as followings: 
 
-* -p (optional): setting the port of remote server, default value: 27993 (no SSL) or 27994 (with SSL) 
+* username (required): username to log into the fakebook
 
-* -s (optional): SSL enabled if set this parameter. SSL disabled otherwise
-
-* host (required): remote host
-
-* ID (required): student ID
+* password (required): password to log into the fakebook
 
 Implementation
 --------------
