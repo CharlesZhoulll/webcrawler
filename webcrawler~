@@ -1,3 +1,0 @@
-#!/bin/bash
-
-java -cp . ./jsoup-1.8.1.jar: WebCrawler.WebCrwlerProj2 $*
