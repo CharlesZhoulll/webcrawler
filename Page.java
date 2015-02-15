@@ -1,22 +1,40 @@
+package WebCrawler;
+
+
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.jsoup.Jsoup;
-import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * The Class Page.
+ */
 public class Page
 {
+	
+	/** The header. */
 	private String headers;
+	
+	/** Store all headers in a hash map. */
 	private HashMap<String, String> header;
+	
+	/** The protocol. */
 	private String protocol;
 
+	/** The response code. */
 	private int responseCode;
+	
+	/** The body. */
 	private Document body;
 
+	/**
+	 * Instantiates a new page.
+	 * Read all content get from the website, separate headers and body
+	 * @param content the content
+	 */
 	public Page(String content)
 	{
 		if (content != null)
@@ -26,12 +44,13 @@ public class Page
 			processHeader(headers);
 			body = Jsoup.parse(content.substring(content.indexOf("\n\n")).trim());
 		}
-		else
-		{
-			System.out.println("axxxx");
-		}
 	}
 
+	/**
+	 * Process header.
+	 * Read each header and store them in the header collection
+	 * @param headers the headers
+	 */
 	private void processHeader(String headers)
 	{
 		String delimsNewLine = "\n+";
@@ -52,16 +71,31 @@ public class Page
 		}
 	}
 
+	/**
+	 * Gets the response code.
+	 *
+	 * @return the response code
+	 */
 	public int getResponseCode()
 	{
 		return responseCode;
 	}
 
+	/**
+	 * Gets the protocol.
+	 *
+	 * @return the protocol
+	 */
 	public String getProtocol()
 	{
 		return protocol;
 	}
 
+	/**
+	 * Gets the secret flags.
+	 *
+	 * @return the secret flags
+	 */
 	public LinkedList<String> getSecretFlags()
 	{
 		Elements secretFlagsEle = body.select("h2.secret_flag");
@@ -74,6 +108,11 @@ public class Page
 		return flags;
 	}
 
+	/**
+	 * Gets the links.
+	 *
+	 * @return the links
+	 */
 	public LinkedList<String> getLinks()
 	{
 		Elements linksEle = body.select("a[href]");
@@ -85,6 +124,11 @@ public class Page
 		return links;
 	}
 
+	/**
+	 * Gets the csrf code.
+	 *
+	 * @return the csrf code
+	 */
 	public String getCsrfCode()
 	{
 		Elements inputElements = body.getElementsByTag("input");
@@ -99,6 +143,11 @@ public class Page
 		return null;
 	}
 
+	/**
+	 * Gets the cookies.
+	 *
+	 * @return the cookies
+	 */
 	public LinkedList<Cookie> getCookies()
 	{
 		LinkedList<Cookie> cookieList = new LinkedList<Cookie>();
@@ -117,7 +166,6 @@ public class Page
 					Cookie cookie = new Cookie(cookieName, cookieValue);
 					cookieList.add(cookie);
 				}
-				// To be add, set other properties of cookie
 			}
 		}
 		if (cookieList.size() > 0)
@@ -131,11 +179,21 @@ public class Page
 		}
 	}
 
+	/**
+	 * Gets the body.
+	 *
+	 * @return the body
+	 */
 	public Document getBody()
 	{
 		return body;
 	}
 	
+	/**
+	 * Gets the location.
+	 *
+	 * @return the location
+	 */
 	public String getLocation()
 	{
 		return header.get("Location");
