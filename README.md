@@ -1,6 +1,8 @@
 # The first webcrawler
 [Project website](http://david.choffnes.com/classes/cs4700sp15/project2.php)
 
+[Java Doc](http://charleszhoulll.github.io/webcrawler/)
+
 Introduction
 ------------
 Webcrawler is a simple web crawler. It achieve basic function of automatical login and content fetching. Webcrawler will first try to login into http://cs5700sp15.ccs.neu.edu/fakebook/ with user name and password provided. The program will be terminated if login fails. After login the crawler will start fetching every link it can find inside the website. A filter is use to stop crawler from fetching outside link. The mission of crawler is to collect 5 secret flags hiding in the network. The crawer will stop as soon as all the secret flags hanve all been found.
